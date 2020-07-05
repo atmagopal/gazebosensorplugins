@@ -735,10 +735,10 @@ namespace gazebo
             this->gtecAnchors = n.advertise<visualization_msgs::MarkerArray>(topicAnchors, 1000);
 
             this->firstRay = boost::dynamic_pointer_cast<physics::RayShape>(
-                                 this->world->Physics()->CreateShape("ray", physics::CollisionPtr()));
+                                 this->world->GetPhysicsEngine()->CreateShape("ray", physics::CollisionPtr()));
 
             this->secondRay = boost::dynamic_pointer_cast<physics::RayShape>(
-                                  this->world->Physics()->CreateShape("ray", physics::CollisionPtr()));
+                                  this->world->GetPhysicsEngine()->CreateShape("ray", physics::CollisionPtr()));
 
             this->updateConnection =
                 event::Events::ConnectWorldUpdateBegin(boost::bind(&UwbPlugin::OnUpdate, this, _1));
@@ -758,11 +758,11 @@ namespace gazebo
 
                 if (!this->useParentAsReference)
                 {
-                    tagPose = this->tagLink->WorldPose();
+                    tagPose = this->tagLink->GetWorldPose().Ign();
                 }
                 else
                 {
-                    tagPose = this->model->WorldPose();
+                    tagPose = this->model->GetWorldPose().Ign();
                 }
 
                 ignition::math::Vector3d posCorrectedZ(tagPose.Pos().X(), tagPose.Pos().Y(), tagPose.Pos().Z() + this->tagZOffset);
@@ -817,7 +817,7 @@ namespace gazebo
                 visualization_msgs::MarkerArray markerArray;
                 visualization_msgs::MarkerArray interferencesArray;
 
-                physics::Model_V models = this->world->Models();
+                physics::Model_V models = this->world->GetModels();
                 for (physics::Model_V::iterator iter = models.begin(); iter != models.end(); ++iter)
                 {
 
@@ -826,7 +826,7 @@ namespace gazebo
                         physics::ModelPtr anchor = *iter;
                         std::string aidStr = anchor->GetName().substr(this->anchorPrefix.length());
                         int aid = std::stoi(aidStr);
-                        ignition::math::Pose3d anchorPose = anchor->WorldPose();
+                        ignition::math::Pose3d anchorPose = anchor->GetWorldPose().Ign();
 
                         LOSType losType = LOS;
                         double distance = tagPose.Pos().Distance(anchorPose.Pos());

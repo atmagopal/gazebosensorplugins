@@ -75,7 +75,8 @@ public: void OnUpdate(const common::UpdateInfo &_info)
     if (elapsed >= this->updatePeriod)
     {
       this->lastUpdateTime = _info.simTime;
-      ignition::math::Pose3d tagPose = this->tagLink->WorldPose();
+      //ignition::math::Pose3d tagPose = this->tagLink->WorldPose();
+      ignition::math::Pose3d tagPose = this->tagLink->GetWorldPose().Ign();
 
       geometry_msgs::PoseWithCovarianceStamped pose;
       pose.pose.pose.position.x = tagPose.Pos().X();
